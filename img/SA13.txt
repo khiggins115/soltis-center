@@ -1,0 +1,66 @@
+import arcpy
+from arcpy import env
+env.overwriteOutput = True
+
+#create workspace
+ws = arcpy.env.workspace = 'P:\essm459.mdb'
+
+#create a feature class
+arcpy.CreateFeatureclass_management(ws, 'OneCell', 'Polygon')
+
+#create zone ID
+ZoneID = arcpy.AddField_management('OneCell', 'ZoneID', 'TEXT', "", "", 3)
+
+#college station point object
+CSPoint = arcpy.CreateFeatureclass_management(ws, 'cstat', 'Point')
+
+#input and output datasets
+in_ds = ws + '\OneCell'
+out_ds = ws + '\Grid_Projection'
+
+#spatial Reference from
+spatial_from = arcpy.SpatialReference(4019) #WKID for GRS 1980
+arcpy.DefineProjection_management(in_ds, spatial_from)
+arcpy.DefineProjection_management(ws + '\cstat', spatial_from)
+#spatial reference to
+spatial_to = arcpy.SpatialReference(102038) #WKID for 'World From Space'
+
+
+cursor = arcpy.da.InsertCursor('OneCell', ['SHAPE@', 'ZoneID'])
+
+x = 67
+
+#looping through to create points
+for j in range (20):
+    for i in range(60):
+        west = -180 + 6 * i
+        east = -174 + 6 * i
+        south = -80 + 8 * j
+        north = -72 + 8 * j
+
+        if j == 19:
+            north += 4
+            
+        sw = arcpy.Point(west, south)
+        nw = arcpy.Point(west, north)
+        ne = arcpy.Point(east, north)
+        se = arcpy.Point(east, south)
+        # print sw, nw, ne, se
+
+        polygon = arcpy.Polygon(arcpy.Array([sw, se, nw, ne]))
+        field = '{0}{1:0>2}'.format(chr(x), i + 1)
+        cursor.insertRow([polygon, field])
+
+    x += 1
+    if x ==73 or x == 79:
+        x+= 1
+
+del cursor
+
+arcpy.Project_management(in_ds, out_ds, spatial_to.exportToString(), '', spatial_from.exportToString() )
+
+icur = arcpy.da.InsertCursor(ws + '\cstat', ['SHAPE@XY'])
+cs = (-96.3144, 30.6014)
+icur.insertRow([cs])
+
+del icur
