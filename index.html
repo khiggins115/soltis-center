@@ -1,1 +1,199 @@
-Hello World
+<html>
+<head>
+  <meta charset=utf-8 />
+  <title>Styling polygons</title>
+  <meta name='viewport' content='initial-scale=1,maximum-scale=1,user-scalable=no' />
+
+  <!-- Load Leaflet from CDN-->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/leaflet/1.0.0-rc.1/leaflet.css" />
+  <script src="https://cdn.jsdelivr.net/leaflet/1.0.0-rc.1/leaflet-src.js"></script>
+
+  <!-- Load Esri Leaflet from CDN -->
+  <script src="https://cdn.jsdelivr.net/leaflet.esri/2.0.0/esri-leaflet.js"></script>
+
+  <style>
+    body { margin:0; padding:0; }
+    #map { position: absolute; top:0; bottom:0; right:0; left:0; }
+  </style>
+</head>
+<body>
+  <style>
+  .label {
+    font-weight: 700;
+    text-transform: uppercase;
+    text-align: center;
+    margin-top: -1em;
+  }
+
+  .label div {
+    position: relative;
+    left: -50%;
+    text-shadow: 0px 2px 1px rgba(255,255,255,0.85);
+  }
+</style>
+
+<div id="map"></div>
+
+<script>
+  
+      var gray = L.esri.basemapLayer('Gray');
+      var streets = L.esri.basemapLayer('Streets');
+  
+      /* URLS */
+      var townsUrl = 'http://services1.arcgis.com/qr14biwnHA6Vis6l/arcgis/rest/services/Towns/FeatureServer/0';
+      var cantonesUrl = 'http://services1.arcgis.com/qr14biwnHA6Vis6l/arcgis/rest/services/Cantones/FeatureServer/0';
+      var protectedAreasUrl = 'http://services1.arcgis.com/qr14biwnHA6Vis6l/arcgis/rest/services/ProtectedAreas/FeatureServer/0';
+      
+      var mainRiversUrl = 'http://services1.arcgis.com/qr14biwnHA6Vis6l/arcgis/rest/services/MainRivers/FeatureServer/0';
+  
+      var landuseUrl = 'http://services1.arcgis.com/qr14biwnHA6Vis6l/arcgis/rest/services/Land_Use/FeatureServer/0';
+      var watershedUrl = 'http://services1.arcgis.com/qr14biwnHA6Vis6l/arcgis/rest/services/Watershed/FeatureServer/0';
+  
+      var hydrographyUrl = 'http://services1.arcgis.com/qr14biwnHA6Vis6l/arcgis/rest/services/Hydrography/FeatureServer/0';
+  
+      /* Towns */
+      var towns = L.esri.featureLayer({
+        url: townsUrl,
+        pointToLayer: function(feature, latlng){
+          return L.circleMarker(latlng, {
+            radius: 2,
+            color: '#3498db',
+            fill: '#3498db',
+            fillOpacity: 0,
+            minZoom: 8,
+            maxZoom: 19
+          });
+        
+        }
+      });
+  
+    /* Cantones */
+      var cantones = L.esri.featureLayer({
+        url: cantonesUrl,
+        style: {
+          color: '#34495e',
+          weight: 2,
+          opacity: 10
+        
+        },
+        
+        maxZoom: 12
+      
+      });
+   /* Protected Areas */
+      var protectedAreas = L.esri.featureLayer({
+        url: protectedAreasUrl,
+        style: {
+          color: '#e74c3c',
+          weight: 2,
+          opacity: 10
+        
+        },
+        maxZoom: 12
+        
+      });
+      
+      /* Main Rivers */
+      var mainRivers = L.esri.featureLayer({
+        url: mainRiversUrl,
+        style: {
+          color: '#2980b9',
+          weight: 3
+
+        },
+        minZoom: 9
+      
+      });
+      
+      /* Hydrography */
+      var hydrography = L.esri.featureLayer({
+        url: hydrographyUrl,
+        style: {
+          color: '#54ACD2',
+          weight: 3
+
+        },
+        minZoom: 12
+      
+      });
+  
+      /* Watershed */
+      var watershed = L.esri.featureLayer({
+        url: watershedUrl,
+        style: {
+          color: '#54ACD2',
+          weight: 1
+        
+        },
+        minZoom: 9
+      });
+  
+      /* Land Use */
+      var landuse = L.esri.featureLayer({
+        url: landuseUrl,
+        simplifyFactor: 0.1,
+        style: function(feature){
+            if(feature.properties.Use_ === 'Bareland'){
+              return { color: '#ecf0f1', weight: 1};                        //flat ui color 'Clouds'
+            } else if(feature.properties.Use_ === 'Crater'){
+              return { color: '##d35400', weight: 1};                      //flat ui color 'pumpkin'
+            } else if(feature.properties.Use_ === 'Crops'){
+              return { color: '#e67e22', weight: 1};                       //flat ui color 'Carrot'
+            } else if(feature.properties.Use_ === 'Forest'){
+              return { color: '#27ae60', weight: 1};                       //flat ui color 'Nephritis'
+            } else if(feature.properties.Use_ === 'Pasture'){
+              return { color: '#f1c40f', weight: 1};                       //flat ui color 'Sunflower'
+            } else if(feature.properties.Use_ === 'Soltis Center'){
+              return { color: '#9b59b6', weight: 1};                       //flat ui color 'Amethyst'
+            } else if(feature.properties.Use_ === 'Urban'){
+              return { color: '#9b59b6', weight: 1};                       //flat ui color 'Amethyst'
+            } else if(feature.properties.Use_ === 'Water'){
+              return { color: '#95a5a6', weight: 1};                       //flat ui color 'Concrete'
+            }
+        },
+        minZoom: 10
+      });
+  
+  
+
+    /* Legends */
+   
+  
+      var map = L.map('map', {
+        center: [10.38, -84.62],  //soltis center coords, [lat, long]
+        zoom: 7,
+        layers: [towns]
+
+      }).setView([ 10.38, -84.62], 7);
+
+      L.esri.basemapLayer('Gray').addTo(map);
+
+      var baseLayers = {
+
+            "Grayscale": gray,
+            "Streets": streets
+
+        };
+        
+
+
+      var overlays = {
+
+          "Towns": towns,
+          "Main Rivers": mainRivers,
+          "Cantones": cantones,
+          "Protected Areas": protectedAreas,
+          "Land Use": landuse,
+          "Watershed": watershed,
+          "Hydrography": hydrography
+
+
+      };
+
+
+      L.control.layers(baseLayers, overlays, { collapsed: false }).addTo(map);
+
+</script>
+
+</body>
+</html>
