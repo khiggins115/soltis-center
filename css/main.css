@@ -141,6 +141,7 @@ PAGE: ABOUT
 
 .profile-photo {
   display: block;
+  height: 150px;
   max-width: 350px;
   margin: 0 auto 20px;
   border-radius: 15%
