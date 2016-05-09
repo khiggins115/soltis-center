@@ -140,7 +140,7 @@ PAGE: ABOUT
 ****************************/
 
 .profile-photo {
-  display: inline;
+  display: block;
   height: 200px;
   max-width: 350px;
   margin: 0 auto 20px;
