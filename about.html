@@ -1,0 +1,92 @@
+<html>
+<head>
+  <meta charset=utf-8 />
+  <title>Soltis Center Web App</title>
+  <meta name='viewport' content='initial-scale=1,maximum-scale=1,user-scalable=no' />
+
+  <!-- Load Leaflet from CDN-->
+  <link rel="stylesheet" href="css/leaflet.css" />
+  <script src="https://cdn.jsdelivr.net/leaflet/1.0.0-rc.1/leaflet-src.js"></script>
+  
+  <!-- Load Bootstrap CSS-->
+  <link href="css/bootstrap.min.css" rel="stylesheet">
+  <link href='css/main.css' rel='stylesheet'>
+  <link href='css/responsive.css' rel='stylesheet'>
+  <link href='css/normalize.css' rel='stylesheet'>
+  
+  <!-- Load Esri Leaflet from CDN -->
+  <script src="https://cdn.jsdelivr.net/leaflet.esri/2.0.0/esri-leaflet.js"></script>
+
+  <style>
+    body { margin:0; padding:0; }
+    #map { position: absolute; top:0; bottom:0; right:0; left:0; }
+  </style>
+</head>
+<body>
+  <style>
+  .label {
+    font-weight: 700;
+    text-transform: uppercase;
+    text-align: center;
+    margin-top: -1em;
+  }
+  .label div {
+    position: relative;
+    left: -50%;
+    text-shadow: 0px 2px 1px rgba(255,255,255,0.85);
+  }
+  #info-pane {
+    position: absolute;
+    top: 10px;
+    right: 300px;
+    z-index: 400;
+    padding: 1em;
+    background: white;
+  }
+</style>
+  
+  <!--Header Section
+        =========================================================================== -->
+        <header class="site-header" role="banner">
+            <!--NAVBAR
+            =========================================================================== -->
+            <div class="navbar-wrapper">
+                <div class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+                    <div class="container">
+                        <div class="navbar-header">
+                            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                                <span class="sr-only">Toggle navigation</span>
+                                <span class="icon-bar"></span>
+                                <span class="icon-bar"></span>
+                                <span class="icon-bar"></span>
+                            </button>
+                            <a class="navbar-brand" href="/">Soltis Center GIS</a>
+                        </div><!-- navbar header end -->
+                          <div class="navbar-collapse collapse">
+                              <ul class="nav navbar-nav navbar-right">
+                                  <li class="active"><a href="/">Home</a></li>
+                                  <li><a href="about.html">About</a></li>
+                                  <li><a href="data.html">Data</a></li>                            
+                              </ul>
+                          </div><!-- navbar collapse end -->
+                    </div>
+                    
+                </div>
+            </div> <!-- navbar wrapper end -->
+        </header>
+
+    <div id= "wrapper">
+      <section>
+        <img src="img/kade_higgins.JPG" alt="Photograph of Kade Higgins" class="profile-photo">
+        <h3>Howdy!</h3>
+        <p>This site functions as a small web app for you and anyone you know to visualize the data we have collected for from our work with the Soltis Center in Costa Rica</p>
+        <p>This site has been configured using the Leaflet Javascript library and the data being served to the map is hosted with Esri's ArcServer. </p>
+          <p>If you're interested in collaborating to this dataset, or editing the data that is currently available, you can contact the Texas A&nbsp;M university Maps and GIS Library. If you'd like to contribute to the Github, you can create a free account and submit a 'pull request' for your submission to be considered for upload.</p>
+        <p>There is additional data available for download on the 'Data' page of this website</p>
+      </section>
+      <footer>
+        <p>&copy; 2015 Katie Higgins.</p>
+      </footer>
+    </div>
+  </body>
+</html>
