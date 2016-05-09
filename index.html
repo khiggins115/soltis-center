@@ -24,20 +24,30 @@
     text-align: center;
     margin-top: -1em;
   }
-
   .label div {
     position: relative;
     left: -50%;
     text-shadow: 0px 2px 1px rgba(255,255,255,0.85);
   }
+  #info-pane {
+    position: absolute;
+    top: 10px;
+    right: 300px;
+    z-index: 400;
+    padding: 1em;
+    background: white;
+  }
 </style>
 
 <div id="map"></div>
+<div id="info-pane" class="leaflet-bar"></div>
 
 <script>
   
+      var oldId;   //global variable 'old ID'
+  
       var gray = L.esri.basemapLayer('Gray');
-      var streets = L.esri.basemapLayer('Streets');
+      var streets = L.esri.basemapLayer('Oceans');
   
       /* URLS */
       var townsUrl = 'http://services1.arcgis.com/qr14biwnHA6Vis6l/arcgis/rest/services/Towns/FeatureServer/0';
@@ -50,10 +60,14 @@
       var watershedUrl = 'http://services1.arcgis.com/qr14biwnHA6Vis6l/arcgis/rest/services/Watershed/FeatureServer/0';
   
       var hydrographyUrl = 'http://services1.arcgis.com/qr14biwnHA6Vis6l/arcgis/rest/services/Hydrography/FeatureServer/0';
+      var buildingsUrl = 'http://services1.arcgis.com/qr14biwnHA6Vis6l/arcgis/rest/services/Buildings/FeatureServer/0';
+      var trailsUrl = 'http://services1.arcgis.com/qr14biwnHA6Vis6l/arcgis/rest/services/Trails/FeatureServer/0';
+      var soltisPointsUrl = 'http://services1.arcgis.com/qr14biwnHA6Vis6l/arcgis/rest/services/Soltis_Center_Points/FeatureServer/0';
   
       /* Towns */
       var towns = L.esri.featureLayer({
         url: townsUrl,
+        fields: ['FID', 'Name'],
         pointToLayer: function(feature, latlng){
           return L.circleMarker(latlng, {
             radius: 2,
@@ -67,22 +81,61 @@
         }
       });
   
+      towns.on('mouseout', function(e){
+          document.getElementById('info-pane').innerHTML = 'Hover to inspect';
+          towns.resetFeatureStyle(oldId);
+
+        });
+
+      towns.on('mouseover', function(e){
+          oldId = e.layer.feature.id;
+          document.getElementById('info-pane').innerHTML = '<strong>Name: </strong>' + e.layer.feature.properties.Name;
+          towns.setFeatureStyle(e.layer.feature.id, {
+            color: '#9D78D2',
+            weight: 3,
+            opacity: 1
+          });
+
+        });
+  
     /* Cantones */
       var cantones = L.esri.featureLayer({
         url: cantonesUrl,
+        simplifyFactor: 0.35,
+        precision: 5,
+        fields: ['FID', 'NCANTON', 'NPROVINCIA'],
+        maxZoom: 12,
         style: {
           color: '#34495e',
-          weight: 2,
-          opacity: 10
+          weight: 1,
+          opacity: 1
         
-        },
+        }
         
-        maxZoom: 12
+      });
+  
+      
+      cantones.on('mouseout', function(e){
+        document.getElementById('info-pane').innerHTML = 'Hover to inspect';
+        cantones.resetFeatureStyle(oldId);
       
       });
-   /* Protected Areas */
+  
+      cantones.on('mouseover', function(e){
+        oldId = e.layer.feature.id;
+        document.getElementById('info-pane').innerHTML = '<strong>Canton: </strong>' + e.layer.feature.properties.NCANTON + '<br><strong>Provincia: </strong>' + e.layer.feature.properties.NPROVINCIA;
+        cantones.setFeatureStyle(e.layer.feature.id, {
+          color: '#9D78D2',
+          weight: 3,
+          opacity: 1
+        });
+      
+      });
+  
+      /* Protected Areas */
       var protectedAreas = L.esri.featureLayer({
         url: protectedAreasUrl,
+        fields: ['FID', 'CODIGO', 'CATEGORIA', 'NAME','Area_Ha'],
         style: {
           color: '#e74c3c',
           weight: 2,
@@ -92,34 +145,86 @@
         maxZoom: 12
         
       });
+  
+      protectedAreas.on('mouseout', function(e){
+        document.getElementById('info-pane').innerHTML = 'Hover to inspect';
+        protectedAreas.resetFeatureStyle(oldId);
+      
+      });
+  
+      protectedAreas.on('mouseover', function(e){
+        oldId = e.layer.feature.id;
+        document.getElementById('info-pane').innerHTML = '<strong>Name: </strong>' + e.layer.feature.properties.Name + '<br><strong>Codigo: </strong>' + e.layer.feature.properties.CODIGO + '<br><strong>Categoria: </strong>' + e.layer.feature.properties.CATEGORIA + '<br><strong>Area: </strong>' + e.layer.feature.properties.Area_Ha + ' Km2';
+        protectedAreas.setFeatureStyle(e.layer.feature.id, {
+          color: '#9D78D2',
+          weight: 3,
+          opacity: 1
+        });
+      
+      });
       
       /* Main Rivers */
       var mainRivers = L.esri.featureLayer({
         url: mainRiversUrl,
+        fields: ['FID','Name','Lenght_Km',],
         style: {
           color: '#2980b9',
           weight: 3
-
         },
         minZoom: 9
+      
+      });
+  
+      mainRivers.on('mouseout', function(e){
+        document.getElementById('info-pane').innerHTML = 'Hover to inspect';
+        mainRivers.resetFeatureStyle(oldId);
+      
+      });
+  
+      mainRivers.on('mouseover', function(e){
+        oldId = e.layer.feature.id;
+        document.getElementById('info-pane').innerHTML = '<strong>Name: </strong>' + e.layer.feature.properties.Name + '<br><strong>Length: </strong>' + e.layer.feature.properties.Lenght_Km + ' Km';
+        mainRivers.setFeatureStyle(e.layer.feature.id, {
+          color: '#9D78D2',
+          weight: 3,
+          opacity: 1
+        });
       
       });
       
       /* Hydrography */
       var hydrography = L.esri.featureLayer({
         url: hydrographyUrl,
+        fields: ['FID','Name', 'Lenght_Km'],
         style: {
           color: '#54ACD2',
           weight: 3
-
         },
         minZoom: 12
+      
+      });
+  
+      hydrography.on('mouseout', function(e){
+        document.getElementById('info-pane').innerHTML = 'Hover to inspect';
+        hydrography.resetFeatureStyle(oldId);
+      
+      });
+  
+      hydrography.on('mouseover', function(e){
+        oldId = e.layer.feature.id;
+        document.getElementById('info-pane').innerHTML = '<strong>Name: </strong>' + e.layer.feature.properties.Name + '<br><strong>Length: </strong>' + e.layer.feature.properties.Lenght_Km + ' Km';
+        hydrography.setFeatureStyle(e.layer.feature.id, {
+          color: '#9D78D2',
+          weight: 3,
+          opacity: 1
+        });
       
       });
   
       /* Watershed */
       var watershed = L.esri.featureLayer({
         url: watershedUrl,
+        fields: ['FID', 'Nombre', 'Area_KM2', 'Precipitac'],
         style: {
           color: '#54ACD2',
           weight: 1
@@ -128,10 +233,29 @@
         minZoom: 9
       });
   
+      watershed.on('mouseout', function(e){
+        document.getElementById('info-pane').innerHTML = 'Hover to inspect';
+        watershed.resetFeatureStyle(oldId);
+      
+      });
+  
+      watershed.on('mouseover', function(e){
+        oldId = e.layer.feature.id;
+        document.getElementById('info-pane').innerHTML = '<strong>Name: </strong>' + e.layer.feature.properties.Nombre + '<br><strong>Area: </strong>' + e.layer.feature.properties.Area_KM2 + ' Km2' + '<br><strong>Precipitaticion: </strong>' + e.layer.feature.properties.Precipitac + ' Km';
+        watershed.setFeatureStyle(e.layer.feature.id, {
+          color: '#9D78D2',
+          weight: 3,
+          opacity: 1
+        });
+      
+      });
+  
       /* Land Use */
       var landuse = L.esri.featureLayer({
         url: landuseUrl,
-        simplifyFactor: 0.1,
+        simplifyFactor: 0.35,
+        precision: 5,
+        fields: ['FID', 'Use_', 'Watershed', 'Km2'],
         style: function(feature){
             if(feature.properties.Use_ === 'Bareland'){
               return { color: '#ecf0f1', weight: 1};                        //flat ui color 'Clouds'
@@ -154,8 +278,115 @@
         minZoom: 10
       });
   
+      
+      
+      landuse.on('mouseout', function(e){
+        document.getElementById('info-pane').innerHTML = 'Hover to inspect';
+        landuse.resetFeatureStyle(oldId);
+      
+      });
   
+      landuse.on('mouseover', function(e){
+        oldId = e.layer.feature.id;
+        document.getElementById('info-pane').innerHTML = '<strong>Use: </strong>' + e.layer.feature.properties.Use_ + '<br><strong>Watershed: </strong>' + e.layer.feature.properties.Watershed + '<br><strong>Area: </strong>' + e.layer.feature.properties.Km2 + ' Km2';
+        landuse.setFeatureStyle(e.layer.feature.id, {
+          color: '#9D78D2',
+          weight: 3,
+          opacity: 1
+        });
+      
+      });
+      
+      /* Buildings */
+      var buildings = L.esri.featureLayer({
+        url: buildingsUrl,
+        fields: ['FID', 'SHAPE_Leng', 'SHAPE_Area', 'Estructura'],
+        style: {
+          color: '#75706B',
+          weight: 2
+        },
+        minZoom: 11
+      
+      });
 
+      buildings.on('mouseout', function(e){
+        document.getElementById('info-pane').innerHTML = 'Hover to inspect';
+        buildings.resetFeatureStyle(oldId);
+      
+      });
+  
+      buildings.on('mouseover', function(e){
+        oldId = e.layer.feature.id;
+        document.getElementById('info-pane').innerHTML = '<strong>Estructura: </strong>' + e.layer.feature.properties.Estructura + '<br><strong>Length: </strong>' + e.layer.feature.properties.SHAPE_Leng + '<br><strong>Area: </strong>' + e.layer.feature.properties.SHAPE_Area + ' Km2';
+        buildings.setFeatureStyle(e.layer.feature.id, {
+          color: '#9D78D2',
+          weight: 3,
+          opacity: 1
+        });
+      
+      });
+  
+      /* Trails */
+      var trails = L.esri.featureLayer({
+        url: trailsUrl,
+        fields: ['FID','SHAPE_Leng', 'Label'],
+        style: {
+          color: '#A38F84',
+          weight: 3
+        
+        },
+        minZoom: 10
+      
+      });
+  
+      trails.on('mouseout', function(e){
+        document.getElementById('info-pane').innerHTML = 'Hover to inspect';
+        trails.resetFeatureStyle(oldId);
+      
+      });
+  
+      trails.on('mouseover', function(e){
+        oldId = e.layer.feature.id;
+        document.getElementById('info-pane').innerHTML = '<strong>Trail: </strong>' + e.layer.feature.properties.Label + '<br><strong>Length: </strong>' + e.layer.feature.properties.SHAPE_Leng + ' Km';
+        trails.setFeatureStyle(e.layer.feature.id, {
+          color: '#9D78D2',
+          weight: 3,
+          opacity: 1
+        });
+      
+      });
+  
+      /* Soltis Center Points */
+      var soltisPoints = L.esri.featureLayer({
+        url: soltisPointsUrl,
+        fields: ['FID','Elevation', 'X', 'Y ','Labels'],
+        style: {
+          color: '#A38F84',
+          weight: 3
+        
+        },
+        minZoom: 10
+      
+      });
+  
+      soltisPoints.on('mouseout', function(e){
+        document.getElementById('info-pane').innerHTML = 'Hover to inspect';
+        soltisPoints.resetFeatureStyle(oldId);
+      
+      });
+  
+      soltisPoints.on('mouseover', function(e){
+        oldId = e.layer.feature.id;
+        document.getElementById('info-pane').innerHTML = '<strong>Label: </strong>' + e.layer.feature.properties.Labels + '<br><strong>Elevation: </strong>' + e.layer.feature.properties.Elevation;
+        soltisPoints.setFeatureStyle(e.layer.feature.id, {
+          color: '#9D78D2',
+          weight: 3,
+          opacity: 1
+        });
+      
+      });
+  
+  
     /* Legends */
    
   
@@ -163,36 +394,26 @@
         center: [10.38, -84.62],  //soltis center coords, [lat, long]
         zoom: 7,
         layers: [towns]
-
       }).setView([ 10.38, -84.62], 7);
-
       L.esri.basemapLayer('Gray').addTo(map);
-
       var baseLayers = {
-
             "Grayscale": gray,
             "Streets": streets
-
         };
         
-
-
       var overlays = {
-
           "Towns": towns,
           "Main Rivers": mainRivers,
           "Cantones": cantones,
           "Protected Areas": protectedAreas,
           "Land Use": landuse,
           "Watershed": watershed,
-          "Hydrography": hydrography
-
-
+          "Hydrography": hydrography,
+          "Buildings": buildings,
+          "Trails": trails,
+          "Soltis Center Points of Interest": soltisPoints
       };
-
-
       L.control.layers(baseLayers, overlays, { collapsed: false }).addTo(map);
-
 </script>
 
 </body>
