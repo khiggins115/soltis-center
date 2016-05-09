@@ -5,9 +5,12 @@
   <meta name='viewport' content='initial-scale=1,maximum-scale=1,user-scalable=no' />
 
   <!-- Load Leaflet from CDN-->
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/leaflet/1.0.0-rc.1/leaflet.css" />
+  <link rel="stylesheet" href="css/leaflet.css" />
   <script src="https://cdn.jsdelivr.net/leaflet/1.0.0-rc.1/leaflet-src.js"></script>
-
+  
+  <!-- Load Bootstrap CSS-->
+  <link href="css/bootstrap.min.css" rel="stylesheet">
+  
   <!-- Load Esri Leaflet from CDN -->
   <script src="https://cdn.jsdelivr.net/leaflet.esri/2.0.0/esri-leaflet.js"></script>
 
@@ -38,6 +41,36 @@
     background: white;
   }
 </style>
+  
+  <!--Header Section
+        =========================================================================== -->
+        <header class="site-header" role="banner">
+            <!--NAVBAR
+            =========================================================================== -->
+            <div class="navbar-wrapper">
+                <div class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+                    <div class="container">
+                        <div class="navbar-header">
+                            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                                <span class="sr-only">Toggle navigation</span>
+                                <span class="icon-bar"></span>
+                                <span class="icon-bar"></span>
+                                <span class="icon-bar"></span>
+                            </button>
+                            <a class="navbar-brand" href="/">Soltis Center GIS</a>
+                        </div><!-- navbar header end -->
+                          <div class="navbar-collapse collapse">
+                              <ul class="nav navbar-nav navbar-right">
+                                  <li class="active"><a href="/">Home</a></li>
+                                  <li><a href="about.html">About</a></li>
+                                  <li><a href="about.html">Data</a></li>
+                              </ul>
+                          </div><!-- navbar collapse end -->
+                    </div>
+                    
+                </div>
+            </div> <!-- navbar wrapper end -->
+        </header>
 
 <div id="map"></div>
 <div id="info-pane" class="leaflet-bar"></div>
